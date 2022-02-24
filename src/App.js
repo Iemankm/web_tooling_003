@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import useSWR from "swr";
 
-function App() {
+const foodList =
+  "https://world.openfoodfacts.org/api/v0/product/737628064502.json";
+
+const fetchJSON = async (endpoint) =>
+  await fetch(endpoint).then((x) => x.json());
+
+const App = () => {
+  const { data } = useSWR(foodList, fetchJSON);
+  const [selectedFood, setSelectedFood] = useState(null);
+
+  if (!data?.product) return null;
+
+  const listofFood = Object.keys(data.product);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div>
+      <div>
+        <select
+          value={selectedFood}
+          onChange={(e) => setSelectedFood(e.target.value)}
         >
-          Learn React
-        </a>
-      </header>
+          <option value={null}>---</option>
+          {listofFood.map((product) => (
+            <option value={product}>{product}</option>
+          ))}
+        </select>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
